@@ -106,7 +106,7 @@
     if (!isAdmin() && u.lastRollDate === todayStr()) { Snd.error(); return; }
     rolling = true;
     Snd.click();
-    var result = G.rollDiscount();
+    var result = G.rollDiscount(isAdmin());   // S000 ใช้ rate ลับ (70 บ่อยสุด)
 
     var ov = $('roll-overlay'); ov.hidden = false;
     $('roll-result').hidden = true;

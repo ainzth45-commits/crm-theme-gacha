@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#0F172A">
-<title>🎲 สุ่มส่วนลดธีม | Theme Gacha</title>
+<title>🏷️ สุ่มส่วนลดธีม | Theme Gacha</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -17,7 +17,7 @@
   <!-- ░░░ LOGIN ░░░ -->
   <section id="view-login" class="view view-login is-active">
     <div class="login-card">
-      <div class="login-logo"><i class="fa-solid fa-dice"></i></div>
+      <div class="login-logo"><i class="fa-solid fa-tags"></i></div>
       <h1 class="login-title">สุ่มส่วนลดธีม</h1>
       <p class="login-sub">กรอกรหัสพนักงานเพื่อเข้าเล่น</p>
       <div class="login-field code-field">
@@ -40,7 +40,7 @@
   <!-- ░░░ APP (home + catalog) ░░░ -->
   <section id="view-app" class="view" hidden>
     <header class="app-header">
-      <div class="app-brand"><i class="fa-solid fa-dice"></i><span>สุ่มส่วนลดธีม</span></div>
+      <div class="app-brand"><i class="fa-solid fa-tags"></i><span>สุ่มส่วนลดธีม</span></div>
       <div class="app-user">
         <span class="user-chip"><i class="fa-solid fa-id-badge"></i> <b id="hdr-emp">—</b></span>
         <button id="btn-change-emp" class="btn-icon" title="เปลี่ยนรหัส">
@@ -56,7 +56,7 @@
         <button id="btn-roll" class="roll-btn">
           <span class="roll-btn-glow"></span>
           <span class="roll-btn-face">
-            <i class="fa-solid fa-dice"></i>
+            <i class="fa-solid fa-tags"></i>
             <span class="roll-btn-text">สุ่มส่วนลด</span>
           </span>
         </button>
@@ -109,16 +109,12 @@
     </div>
   </div>
 
-  <!-- ░░░ LIGHTBOX ดูรูปธีม ░░░ -->
+  <!-- ░░░ LIGHTBOX ดูรูปธีม (เลื่อนด้วยนิ้ว scroll-snap) ░░░ -->
   <div id="lightbox" class="lightbox" hidden>
     <button class="lb-close" id="lb-close" aria-label="ปิด"><i class="fa-solid fa-xmark"></i></button>
-    <button class="lb-nav lb-prev" id="lb-prev" aria-label="ก่อนหน้า"><i class="fa-solid fa-chevron-left"></i></button>
-    <div class="lb-stage" id="lb-stage">
-      <img id="lb-img" alt="" draggable="false">
-      <div id="lb-ph" class="lb-ph" hidden></div>
-    </div>
-    <button class="lb-nav lb-next" id="lb-next" aria-label="ถัดไป"><i class="fa-solid fa-chevron-right"></i></button>
-    <div class="lb-bar"><b id="lb-title">SP1</b> · รูป <span id="lb-cur">1</span>/<span id="lb-total">5</span></div>
+    <div class="lb-track" id="lb-track"></div>
+    <div class="lb-dots" id="lb-dots"></div>
+    <div class="lb-bar"><b id="lb-title">SP1</b> · รูป <span id="lb-cur">1</span>/<span id="lb-total">5</span> · ปัดเพื่อดูรูปถัดไป</div>
   </div>
 
   <canvas id="confetti" aria-hidden="true"></canvas>

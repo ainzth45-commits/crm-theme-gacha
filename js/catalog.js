@@ -1,10 +1,9 @@
 /* ============================================================
-   📖 Catalog — กริดธีม + ราคา · กดการ์ด → เปิด Lightbox ดูรูป (ธีมละ 5 รูป)
+   📖 Catalog — กริดธีม + ราคา · กดการ์ด → Lightbox เลื่อนดูรูป (ปัดนิ้ว scroll-snap)
    ============================================================ */
 (function () {
   'use strict';
   var $ = function (id) { return document.getElementById(id); };
-  var Snd = window.GachaSound;
   var themes = [];
 
   function phStyle(t) {
@@ -43,59 +42,67 @@
     else chip.hidden = true;
   }
 
-  /* ---------- Lightbox ---------- */
-  var lbTheme = 0, lbIdx = 0;
+  /* ---------- Lightbox (เลื่อนด้วยนิ้ว) ---------- */
+  var curTheme = 0;
   function openLB(ti) {
-    lbTheme = ti; lbIdx = 0;
-    $('lightbox').hidden = false;
-    document.addEventListener('keydown', onKey);
-    renderSlide();
-  }
-  function closeLB() {
-    $('lightbox').hidden = true;
-    document.removeEventListener('keydown', onKey);
-  }
-  function move(d) {
-    var n = themes[lbTheme].imgs.length;
-    lbIdx = (lbIdx + d + n) % n;
-    if (Snd) Snd.click();
-    renderSlide();
-  }
-  function renderSlide() {
-    var t = themes[lbTheme], src = t.imgs[lbIdx];
-    var img = $('lb-img'), ph = $('lb-ph');
-    ph.hidden = true; img.style.display = 'block';
-    img.onerror = function () {
-      img.style.display = 'none';
-      ph.hidden = false;
-      ph.setAttribute('style', phStyle(t));
-      ph.innerHTML = t.name + '<br><small style="font-weight:300;opacity:.85">รูปที่ ' + (lbIdx + 1) + '/' + t.imgs.length + ' — ยังไม่มีรูป</small>';
-    };
-    img.src = src; img.alt = t.name + ' รูป ' + (lbIdx + 1);
+    curTheme = ti;
+    var t = themes[ti], n = t.imgs.length, track = $('lb-track');
+    track.innerHTML = t.imgs.map(function (src, i) {
+      return '<div class="lb-slide">' +
+        '<img src="' + src + '" alt="' + t.name + ' รูป ' + (i + 1) + '" draggable="false" ' +
+        'onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'grid\'">' +
+        '<div class="lb-ph" style="' + phStyle(t) + 'display:none">' + t.name +
+        '<br><small style="font-weight:300;opacity:.85">รูปที่ ' + (i + 1) + '/' + n + ' — ยังไม่มีรูป</small></div>' +
+        '</div>';
+    }).join('');
+    // dots
+    var dots = $('lb-dots'), dh = '';
+    for (var i = 0; i < n; i++) dh += '<button type="button" class="lb-dot' + (i === 0 ? ' on' : '') + '" data-i="' + i + '" aria-label="รูป ' + (i + 1) + '"></button>';
+    dots.innerHTML = dh;
     $('lb-title').textContent = t.name;
-    $('lb-cur').textContent = lbIdx + 1;
-    $('lb-total').textContent = t.imgs.length;
+    $('lb-total').textContent = n;
+    $('lb-cur').textContent = 1;
+    $('lightbox').hidden = false;
+    track.scrollLeft = 0;
+    document.addEventListener('keydown', onKey);
+  }
+  function closeLB() { $('lightbox').hidden = true; document.removeEventListener('keydown', onKey); }
+
+  function curIdx() {
+    var track = $('lb-track');
+    return Math.round(track.scrollLeft / track.clientWidth) || 0;
+  }
+  function syncActive() {
+    var i = curIdx();
+    $('lb-cur').textContent = i + 1;
+    var dots = $('lb-dots').children;
+    for (var d = 0; d < dots.length; d++) dots[d].classList.toggle('on', d === i);
+  }
+  function scrollToIdx(i) {
+    var track = $('lb-track');
+    var n = themes[curTheme].imgs.length;
+    i = Math.max(0, Math.min(n - 1, i));
+    track.scrollTo({ left: i * track.clientWidth, behavior: 'smooth' });
   }
   function onKey(e) {
     if (e.key === 'Escape') closeLB();
-    else if (e.key === 'ArrowRight') move(1);
-    else if (e.key === 'ArrowLeft') move(-1);
+    else if (e.key === 'ArrowRight') scrollToIdx(curIdx() + 1);
+    else if (e.key === 'ArrowLeft') scrollToIdx(curIdx() - 1);
   }
 
   function initLB() {
     $('lb-close').addEventListener('click', closeLB);
-    $('lb-prev').addEventListener('click', function () { move(-1); });
-    $('lb-next').addEventListener('click', function () { move(1); });
-    // คลิกพื้นหลัง (นอกรูป) เพื่อปิด
-    $('lightbox').addEventListener('click', function (e) { if (e.target === $('lightbox') || e.target === $('lb-stage')) closeLB(); });
-    // ปัดซ้าย/ขวาบน touch
-    var sx = 0, sy = 0, tracking = false;
-    var st = $('lb-stage');
-    st.addEventListener('pointerdown', function (e) { sx = e.clientX; sy = e.clientY; tracking = true; });
-    st.addEventListener('pointerup', function (e) {
-      if (!tracking) return; tracking = false;
-      var dx = e.clientX - sx, dy = e.clientY - sy;
-      if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy)) move(dx < 0 ? 1 : -1);
+    // คลิกพื้นที่ว่างนอกรูป (ขอบบน/ล่าง) เพื่อปิด
+    $('lightbox').addEventListener('click', function (e) { if (e.target === $('lightbox')) closeLB(); });
+    // อัปเดตตัวนับ/จุด ตามการเลื่อน (throttle ด้วย rAF)
+    var ticking = false;
+    $('lb-track').addEventListener('scroll', function () {
+      if (ticking) return; ticking = true;
+      requestAnimationFrame(function () { syncActive(); ticking = false; });
+    });
+    // จุดด้านล่าง — แตะเพื่อกระโดดไปรูปนั้น (สมูท)
+    $('lb-dots').addEventListener('click', function (e) {
+      var b = e.target.closest('.lb-dot'); if (b) scrollToIdx(+b.getAttribute('data-i'));
     });
   }
 

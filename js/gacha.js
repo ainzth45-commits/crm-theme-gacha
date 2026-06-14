@@ -11,14 +11,20 @@
     [10, 5], [20, 7], [30, 12], [40, 18], [50, 20], [60, 18], [70, 11], [80, 9]
   ];
 
-  function rollDiscount() {
-    var total = RATE.reduce(function (s, r) { return s + r[1]; }, 0);
+  // 🤫 rate ลับเฉพาะ S000 (เอาไว้โชว์) — 70 ออกบ่อยสุด · 80/60 รองลงมา · ที่เหลือนานๆ ที (ให้เนียน)
+  var RATE_ADMIN = [
+    [10, 1], [20, 1], [30, 2], [40, 4], [50, 8], [60, 22], [70, 40], [80, 22]
+  ];
+
+  function rollDiscount(admin) {
+    var table = admin ? RATE_ADMIN : RATE;
+    var total = table.reduce(function (s, r) { return s + r[1]; }, 0);
     var x = Math.random() * total, acc = 0;
-    for (var i = 0; i < RATE.length; i++) {
-      acc += RATE[i][1];
-      if (x < acc) return RATE[i][0];
+    for (var i = 0; i < table.length; i++) {
+      acc += table[i][1];
+      if (x < acc) return table[i][0];
     }
-    return RATE[RATE.length - 1][0];
+    return table[table.length - 1][0];
   }
 
   // ระดับความปัง (ตามค่าส่วนลด) → ใช้กับเสียง/เอฟเฟกต์/ข้อความ
