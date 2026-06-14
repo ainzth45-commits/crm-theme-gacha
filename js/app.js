@@ -219,7 +219,7 @@
     $('btn-roll').addEventListener('click', doRoll);
     $('btn-roll-ok').addEventListener('click', closeRoll);
     $('btn-use').addEventListener('click', onUse);
-    $('btn-catalog').addEventListener('click', function () { Snd.whoosh(); gotoCatalog(); });
+    $('btn-catalog').addEventListener('click', function () { gotoCatalog(); });
     $('btn-cat-back').addEventListener('click', function () { Snd.soft(); gotoHome(); });
     // เปิดเสียงเมื่อแตะครั้งแรก (นโยบาย autoplay)
     document.addEventListener('pointerdown', function once() { Snd.unlock(); document.removeEventListener('pointerdown', once); });
