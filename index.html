@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="th" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0F172A">
+<title>🎲 สุ่มส่วนลดธีม | Theme Gacha</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- พื้นหลังเอฟเฟกต์ (เหรียญ/ประกายลอย) -->
+  <div id="bg-fx" aria-hidden="true"></div>
+
+  <!-- ░░░ LOGIN ░░░ -->
+  <section id="view-login" class="view view-login is-active">
+    <div class="login-card">
+      <div class="login-logo"><i class="fa-solid fa-dice"></i></div>
+      <h1 class="login-title">สุ่มส่วนลดธีม</h1>
+      <p class="login-sub">กรอกรหัสพนักงานเพื่อเข้าเล่น</p>
+      <div class="login-field">
+        <i class="fa-solid fa-id-badge"></i>
+        <input id="emp-code" type="text" inputmode="text" autocomplete="off"
+               placeholder="รหัสพนักงาน เช่น S000" maxlength="12" spellcheck="false">
+      </div>
+      <button id="btn-login" class="btn btn-primary btn-block">
+        <i class="fa-solid fa-right-to-bracket"></i> เข้าสู่ระบบ
+      </button>
+      <div id="login-err" class="login-err" hidden></div>
+    </div>
+    <div class="login-foot">ธีมราคา 10 เหรียญ · สุ่มส่วนลดได้วันละ 1 ครั้ง</div>
+  </section>
+
+  <!-- ░░░ APP (home + catalog) ░░░ -->
+  <section id="view-app" class="view" hidden>
+    <header class="app-header">
+      <div class="app-brand"><i class="fa-solid fa-dice"></i><span>สุ่มส่วนลดธีม</span></div>
+      <div class="app-user">
+        <span class="user-chip"><i class="fa-solid fa-id-badge"></i> <b id="hdr-emp">—</b></span>
+        <button id="btn-change-emp" class="btn-icon" title="เปลี่ยนรหัส">
+          <i class="fa-solid fa-right-from-bracket"></i><span class="lbl">เปลี่ยนรหัส</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- HOME -->
+    <main id="page-home" class="page is-active">
+      <div class="hero">
+        <p class="hero-kicker">กดเพื่อเสี่ยงโชค</p>
+        <button id="btn-roll" class="roll-btn">
+          <span class="roll-btn-glow"></span>
+          <span class="roll-btn-face">
+            <i class="fa-solid fa-dice"></i>
+            <span class="roll-btn-text">สุ่มส่วนลด</span>
+          </span>
+        </button>
+        <p id="roll-note" class="roll-note"></p>
+      </div>
+
+      <!-- การ์ดส่วนลดปัจจุบัน -->
+      <div id="discount-card" class="discount-card">
+        <div class="dc-empty">
+          <i class="fa-regular fa-face-smile-wink"></i>
+          <p>ยังไม่มีส่วนลด — กดปุ่มด้านบนเพื่อลุ้นเลย!</p>
+        </div>
+        <div class="dc-have" hidden>
+          <div class="dc-badge">ส่วนลดของคุณ</div>
+          <div class="dc-value"><span id="dc-pct">0</span><small>%</small></div>
+          <div class="dc-price">ธีม <b>10</b> เหรียญ → จ่ายแค่ <b id="dc-final">10</b> เหรียญ</div>
+          <button id="btn-use" class="btn btn-success btn-block">
+            <i class="fa-solid fa-circle-check"></i> ใช้ส่วนลดนี้
+          </button>
+          <p class="dc-hint">* กด “ใช้” เมื่อจะนำไปแลกธีมจริง — กดแล้วส่วนลดจะถูกใช้ไป</p>
+        </div>
+      </div>
+
+      <button id="btn-catalog" class="btn btn-ghost btn-block btn-lg">
+        <i class="fa-solid fa-book-open"></i> เปิด Catalog ดูธีม
+      </button>
+    </main>
+
+    <!-- CATALOG -->
+    <main id="page-catalog" class="page">
+      <div class="cat-head">
+        <button id="btn-cat-back" class="btn-icon"><i class="fa-solid fa-arrow-left"></i><span class="lbl">กลับ</span></button>
+        <h2><i class="fa-solid fa-palette"></i> Catalog ธีม</h2>
+        <span id="cat-discount-chip" class="cat-disc-chip" hidden></span>
+      </div>
+      <div id="cat-grid" class="cat-grid"></div>
+    </main>
+  </section>
+
+  <!-- ░░░ ROLL OVERLAY ░░░ -->
+  <div id="roll-overlay" class="roll-overlay" hidden>
+    <div class="roll-stage">
+      <p class="roll-stage-kicker" id="roll-stage-kicker">กำลังสุ่ม...</p>
+      <div class="roll-number"><span id="roll-num">10</span><small>%</small></div>
+      <div id="roll-result" class="roll-result" hidden>
+        <p class="rr-tier" id="rr-tier"></p>
+        <p class="rr-msg">ส่วนลด <b id="rr-pct">0</b>% · ธีม 10 → <b id="rr-final">0</b> เหรียญ</p>
+        <button id="btn-roll-ok" class="btn btn-primary">เยี่ยม!</button>
+      </div>
+    </div>
+  </div>
+
+  <canvas id="confetti" aria-hidden="true"></canvas>
+
+  <script src="data/themes.js"></script>
+  <script src="js/sound.js"></script>
+  <script src="js/gacha.js"></script>
+  <script src="js/catalog.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
