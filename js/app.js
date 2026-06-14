@@ -29,8 +29,8 @@
   function showLogin() {
     $('view-app').hidden = true;
     var lv = $('view-login'); lv.hidden = false; lv.classList.add('is-active');
-    $('emp-code').value = ''; $('login-err').hidden = true;
-    setTimeout(function () { $('emp-code').focus(); }, 60);
+    $('emp-letter').value = ''; $('emp-digits').value = ''; $('login-err').hidden = true;
+    setTimeout(function () { $('emp-letter').focus(); }, 60);
   }
   function showApp() {
     var lv = $('view-login'); lv.classList.remove('is-active'); lv.hidden = true;
@@ -51,12 +51,16 @@
   }
 
   /* ---------- home render ---------- */
+  function isAdmin() { return emp === 'S000'; }   // S000 = แอดมิน สุ่มได้ไม่จำกัด/วัน
+
   function renderHome() {
     var u = loadUser();
-    var rolledToday = u.lastRollDate === todayStr();
+    var rolledToday = !isAdmin() && u.lastRollDate === todayStr();
     var rollBtn = $('btn-roll'), note = $('roll-note');
     rollBtn.disabled = rolledToday;
-    note.textContent = rolledToday ? '🌙 วันนี้สุ่มไปแล้ว — กลับมาใหม่พรุ่งนี้นะ' : 'สุ่มได้วันละ 1 ครั้ง · ลุ้นสูงสุด 80%!';
+    note.textContent = isAdmin()
+      ? '👑 โหมดแอดมิน: สุ่มได้ไม่จำกัด'
+      : (rolledToday ? '🌙 วันนี้สุ่มไปแล้ว — กลับมาใหม่พรุ่งนี้นะ' : 'สุ่มได้วันละ 1 ครั้ง · ลุ้นสูงสุด 80%!');
 
     var have = u.discount && u.discount > 0;
     $('discount-card').querySelector('.dc-empty').hidden = have;
@@ -99,7 +103,7 @@
   function doRoll() {
     if (rolling) return;
     var u = loadUser();
-    if (u.lastRollDate === todayStr()) { Snd.error(); return; }
+    if (!isAdmin() && u.lastRollDate === todayStr()) { Snd.error(); return; }
     rolling = true;
     Snd.click();
     var result = G.rollDiscount();
@@ -152,15 +156,18 @@
 
   /* ---------- login ---------- */
   function doLogin() {
-    Snd.unlock(); Snd.click();
-    var raw = ($('emp-code').value || '').trim().toUpperCase().replace(/\s+/g, '');
-    if (!raw) {
-      var e = $('login-err'); e.hidden = false; e.textContent = 'กรุณากรอกรหัสพนักงานก่อนนะคะ';
-      Snd.error(); $('emp-code').focus(); return;
+    Snd.unlock();   // เปิด audio context (ไม่มีเสียง) — ไม่มีเสียงตอนเข้าระบบ
+    var letter = ($('emp-letter').value || '').trim().toUpperCase();
+    var digits = ($('emp-digits').value || '').trim();
+    if (!/^[A-Z]$/.test(letter) || !/^[0-9]{3}$/.test(digits)) {
+      var e = $('login-err'); e.hidden = false;
+      e.textContent = 'รหัสต้องเป็น ตัวอักษร 1 ตัว + ตัวเลข 3 ตัว (เช่น S000)';
+      Snd.error();
+      (/^[A-Z]$/.test(letter) ? $('emp-digits') : $('emp-letter')).focus();
+      return;
     }
-    emp = raw;
+    emp = letter + digits;
     lsSet('gacha_current', emp);
-    Snd.whoosh();
     showApp();
   }
   function changeEmp() {
@@ -213,8 +220,20 @@
   /* ---------- wire ---------- */
   function init() {
     buildBg();
+    window.GachaCatalog.initLB();
     $('btn-login').addEventListener('click', doLogin);
-    $('emp-code').addEventListener('keydown', function (e) { if (e.key === 'Enter') doLogin(); });
+    // ช่องรหัส: ตัวอักษรพิมพ์ใหญ่ 1 ตัว + ตัวเลข 3 ตัว · สลับแป้นเอง (text → numeric)
+    var L = $('emp-letter'), D = $('emp-digits');
+    L.addEventListener('input', function () {
+      this.value = this.value.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 1);
+      if (this.value) D.focus();
+    });
+    L.addEventListener('keydown', function (e) { if (e.key === 'Enter') doLogin(); });
+    D.addEventListener('input', function () { this.value = this.value.replace(/[^0-9]/g, '').slice(0, 3); });
+    D.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') doLogin();
+      else if (e.key === 'Backspace' && !this.value) L.focus();
+    });
     $('btn-change-emp').addEventListener('click', changeEmp);
     $('btn-roll').addEventListener('click', doRoll);
     $('btn-roll-ok').addEventListener('click', closeRoll);

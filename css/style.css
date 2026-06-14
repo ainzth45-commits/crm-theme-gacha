@@ -67,6 +67,11 @@ b{font-weight:700}
 .login-field i{color:var(--c-muted)}
 .login-field input{flex:1;border:none;background:none;outline:none;font-family:inherit;font-size:1.1rem;
   padding:14px 0;color:var(--c-text);letter-spacing:1px;text-transform:uppercase}
+/* ช่องรหัส 2 ส่วน: ตัวอักษร 1 + ตัวเลข 3 */
+.code-field .ci-letter{flex:0 0 2.4em;text-align:center;font-weight:700;font-size:1.3rem;letter-spacing:0}
+.code-field .ci-sep{width:1.5px;align-self:stretch;margin:10px 0;background:var(--c-border)}
+.code-field .ci-digits{flex:1;text-align:center;font-weight:700;font-size:1.3rem;letter-spacing:8px}
+.login-hint{color:var(--c-muted);font-size:.82rem;font-weight:300;margin:-6px 0 16px}
 .login-err{color:var(--c-danger);font-size:.9rem;margin-top:12px;font-weight:500;animation:shake .4s}
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
 .login-foot{color:rgba(226,232,240,.6);font-size:.85rem;font-weight:300;text-align:center}
@@ -141,8 +146,13 @@ b{font-weight:700}
   font-weight:600;font-size:.85rem;padding:6px 14px;border-radius:999px}
 .cat-grid{width:100%;display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:clamp(12px,2.4vw,18px)}
 .theme-card{background:var(--c-card);border-radius:18px;overflow:hidden;box-shadow:var(--sh-md);
-  transition:transform .2s var(--ease),box-shadow .2s;animation:cardIn .45s var(--ease) both}
+  transition:transform .2s var(--ease),box-shadow .2s;animation:cardIn .45s var(--ease) both;
+  border:none;padding:0;cursor:pointer;text-align:left;font-family:inherit;width:100%;color:inherit;display:block}
 .theme-card:hover{transform:translateY(-6px);box-shadow:var(--sh-lg)}
+.theme-card:active{transform:translateY(-2px) scale(.99)}
+.tc-zoom{position:absolute;top:8px;right:8px;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;
+  background:rgba(15,23,42,.55);color:#fff;font-size:.8rem;opacity:0;transition:opacity .2s}
+.theme-card:hover .tc-zoom{opacity:1}
 @keyframes cardIn{from{opacity:0;transform:translateY(20px) scale(.96)}to{opacity:1;transform:none}}
 .tc-img{aspect-ratio:16/10;background:var(--c-soft);display:grid;place-items:center;position:relative;overflow:hidden}
 .tc-img img{width:100%;height:100%;object-fit:cover;display:block}
@@ -175,8 +185,32 @@ b{font-weight:700}
 .rr-msg b{color:#fff;font-weight:700}
 .roll-result .btn{padding:14px 40px;font-size:1.1rem}
 
+/* ============================================================ LIGHTBOX ดูรูปธีม */
+.lightbox{position:fixed;inset:0;z-index:70;display:flex;align-items:center;justify-content:center;
+  background:rgba(7,11,22,.92);backdrop-filter:blur(10px);animation:fadeIn .22s;
+  padding:clamp(50px,8vh,90px) clamp(56px,9vw,110px)}
+.lb-stage{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;
+  touch-action:pan-y}
+.lb-stage img{max-width:100%;max-height:100%;object-fit:contain;border-radius:16px;
+  box-shadow:0 24px 60px rgba(0,0,0,.6);animation:popIn .35s var(--ease) both;background:#0b0f1a}
+.lb-ph{width:min(80vw,640px);aspect-ratio:16/10;border-radius:16px;display:grid;place-items:center;
+  color:#fff;font-weight:600;font-size:1.1rem;text-align:center;line-height:1.6;padding:20px;
+  background:linear-gradient(135deg,var(--ph-a,#3b6fe0),var(--ph-b,#9b6fff));animation:popIn .35s var(--ease) both}
+.lb-close{position:absolute;top:18px;right:18px;width:46px;height:46px;border-radius:50%;border:none;cursor:pointer;
+  background:rgba(255,255,255,.14);color:#fff;font-size:1.2rem;display:grid;place-items:center;transition:background .2s,transform .15s}
+.lb-close:hover{background:rgba(255,255,255,.28)}.lb-close:active{transform:scale(.9)}
+.lb-nav{position:absolute;top:50%;transform:translateY(-50%);width:clamp(42px,7vw,56px);height:clamp(42px,7vw,56px);
+  border-radius:50%;border:none;cursor:pointer;background:rgba(255,255,255,.14);color:#fff;font-size:1.4rem;
+  display:grid;place-items:center;transition:background .2s,transform .15s;z-index:2}
+.lb-nav:hover{background:rgba(255,255,255,.3)}.lb-nav:active{transform:translateY(-50%) scale(.9)}
+.lb-prev{left:clamp(10px,2vw,26px)}.lb-next{right:clamp(10px,2vw,26px)}
+.lb-bar{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);color:#dbe4f3;
+  background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.14);padding:7px 18px;border-radius:999px;
+  font-size:.92rem}
+.lb-bar b{color:var(--c-gold)}
+
 /* confetti canvas */
-#confetti{position:fixed;inset:0;z-index:60;pointer-events:none}
+#confetti{position:fixed;inset:0;z-index:80;pointer-events:none}
 
 /* shake สำหรับแจ็คพอต */
 .shake{animation:bigShake .5s var(--ease)}

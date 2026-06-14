@@ -20,11 +20,15 @@
       <div class="login-logo"><i class="fa-solid fa-dice"></i></div>
       <h1 class="login-title">สุ่มส่วนลดธีม</h1>
       <p class="login-sub">กรอกรหัสพนักงานเพื่อเข้าเล่น</p>
-      <div class="login-field">
+      <div class="login-field code-field">
         <i class="fa-solid fa-id-badge"></i>
-        <input id="emp-code" type="text" inputmode="text" autocomplete="off"
-               placeholder="รหัสพนักงาน เช่น S000" maxlength="12" spellcheck="false">
+        <input id="emp-letter" class="ci-letter" type="text" inputmode="text" autocapitalize="characters"
+               autocomplete="off" maxlength="1" placeholder="S" spellcheck="false" aria-label="ตัวอักษร">
+        <span class="ci-sep"></span>
+        <input id="emp-digits" class="ci-digits" type="text" inputmode="numeric" pattern="[0-9]*"
+               autocomplete="off" maxlength="3" placeholder="000" spellcheck="false" aria-label="ตัวเลข 3 หลัก">
       </div>
+      <p class="login-hint">รูปแบบ: ตัวอักษร 1 ตัว + ตัวเลข 3 ตัว (เช่น S000)</p>
       <button id="btn-login" class="btn btn-primary btn-block">
         <i class="fa-solid fa-right-to-bracket"></i> เข้าสู่ระบบ
       </button>
@@ -103,6 +107,18 @@
         <button id="btn-roll-ok" class="btn btn-primary">เยี่ยม!</button>
       </div>
     </div>
+  </div>
+
+  <!-- ░░░ LIGHTBOX ดูรูปธีม ░░░ -->
+  <div id="lightbox" class="lightbox" hidden>
+    <button class="lb-close" id="lb-close" aria-label="ปิด"><i class="fa-solid fa-xmark"></i></button>
+    <button class="lb-nav lb-prev" id="lb-prev" aria-label="ก่อนหน้า"><i class="fa-solid fa-chevron-left"></i></button>
+    <div class="lb-stage" id="lb-stage">
+      <img id="lb-img" alt="" draggable="false">
+      <div id="lb-ph" class="lb-ph" hidden></div>
+    </div>
+    <button class="lb-nav lb-next" id="lb-next" aria-label="ถัดไป"><i class="fa-solid fa-chevron-right"></i></button>
+    <div class="lb-bar"><b id="lb-title">SP1</b> · รูป <span id="lb-cur">1</span>/<span id="lb-total">5</span></div>
   </div>
 
   <canvas id="confetti" aria-hidden="true"></canvas>
