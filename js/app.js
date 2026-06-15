@@ -29,8 +29,10 @@
   function showLogin() {
     $('view-app').hidden = true;
     var lv = $('view-login'); lv.hidden = false; lv.classList.add('is-active');
-    $('emp-letter').value = ''; $('emp-digits').value = ''; $('login-err').hidden = true;
-    setTimeout(function () { $('emp-letter').focus(); }, 60);
+    // ตั้งตัวอักษรเริ่มต้น = "C" (พนักงานส่วนใหญ่) แล้วโฟกัสช่องเลขเลย → พิมพ์ตัวเลขได้ทันที
+    // (จะเข้าด้วย S000 ก็แก้ตัวอักษรเอง)
+    $('emp-letter').value = 'C'; $('emp-digits').value = ''; $('login-err').hidden = true;
+    setTimeout(function () { var d = $('emp-digits'); d.focus(); }, 60);
   }
   function showApp() {
     var lv = $('view-login'); lv.classList.remove('is-active'); lv.hidden = true;

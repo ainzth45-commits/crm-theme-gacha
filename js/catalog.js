@@ -26,7 +26,6 @@
       var imgEl = '<img src="' + first + '" alt="' + t.name + '" loading="lazy" ' +
         'onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'grid\'">' +
         '<div class="tc-ph" style="' + phStyle(t) + 'display:none">' + t.name + '</div>' +
-        (t.video ? '<span class="tc-play"><i class="fa-solid fa-circle-play"></i> ดูภาพเคลื่อนไหว</span>' : '') +
         '<span class="tc-zoom"><i class="fa-solid fa-magnifying-glass-plus"></i></span>';
       return '<button type="button" class="theme-card" data-idx="' + i + '" style="animation-delay:' + (i * 45) + 'ms">' +
         '<div class="tc-img">' + imgEl + '</div>' +
@@ -46,25 +45,16 @@
   /* ---------- Lightbox = ปัดนิ้ว (native scroll-snap) + ปุ่ม ‹ › สำรอง ---------- */
   var n = 0;
   function openLB(ti) {
-    var t = themes[ti];
-    var imgCount = t.imgs.length;
-    var slides = [];
-    // สไลด์แรก = วิดีโอพื้นหลังเคลื่อนไหว (autoplay + loop + เงียบ)
-    if (t.video) {
-      slides.push('<div class="lb-slide"><video class="lb-media" src="' + t.video + '" muted loop playsinline autoplay preload="auto" poster="' + (t.imgs[0] || '') + '"></video>' +
-        '<span class="lb-live">▶ พื้นหลังเคลื่อนไหว</span></div>');
-    }
-    t.imgs.forEach(function (src, i) {
-      slides.push('<div class="lb-slide">' +
+    var t = themes[ti]; n = t.imgs.length;
+    var track = $('lb-track');
+    track.innerHTML = t.imgs.map(function (src, i) {
+      return '<div class="lb-slide">' +
         '<img src="' + src + '" alt="' + t.name + ' รูป ' + (i + 1) + '" draggable="false" ' +
         'onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'grid\'">' +
         '<div class="lb-ph" style="' + phStyle(t) + 'display:none">' + t.name +
-        '<br><small style="font-weight:300;opacity:.85">รูปที่ ' + (i + 1) + '/' + imgCount + ' — ยังไม่มีรูป</small></div>' +
-        '</div>');
-    });
-    n = slides.length;
-    var track = $('lb-track');
-    track.innerHTML = slides.join('');
+        '<br><small style="font-weight:300;opacity:.85">รูปที่ ' + (i + 1) + '/' + n + ' — ยังไม่มีรูป</small></div>' +
+        '</div>';
+    }).join('');
     var dh = '';
     for (var i = 0; i < n; i++) dh += '<button type="button" class="lb-dot' + (i === 0 ? ' on' : '') + '" data-i="' + i + '"></button>';
     $('lb-dots').innerHTML = dh;
@@ -74,11 +64,9 @@
     document.body.classList.add('lb-noscroll');
     track.scrollLeft = 0;
     syncActive();
-    var v = track.querySelector('video'); if (v) { v.play().catch(function () {}); }
     document.addEventListener('keydown', onKey);
   }
   function closeLB() {
-    var v = $('lb-track').querySelector('video'); if (v) v.pause();
     $('lightbox').hidden = true;
     document.body.classList.remove('lb-noscroll');
     document.removeEventListener('keydown', onKey);

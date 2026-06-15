@@ -22,6 +22,6 @@
     var lc = d.id.toLowerCase();
     var imgs = [];
     for (var i = 1; i <= IMG_PER_THEME; i++) imgs.push('assets/themes/' + lc + '-' + i + '.png');
-    return { id: d.id, name: d.id, ph: d.ph, imgs: imgs, video: 'assets/videos/' + lc + '-loop.mp4' };
+    return { id: d.id, name: d.id, ph: d.ph, imgs: imgs };
   });
 })();
