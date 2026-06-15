@@ -187,15 +187,25 @@ b{font-weight:700}
 .roll-result .btn{padding:14px 40px;font-size:1.1rem}
 
 /* ============================================================ LIGHTBOX ดูรูปธีม */
-.lightbox{position:fixed;inset:0;z-index:70;background:rgba(7,11,22,.92);backdrop-filter:blur(10px);
-  animation:fadeIn .22s;touch-action:none;overscroll-behavior:none}
+.lightbox{position:fixed;inset:0;z-index:70;background:rgba(7,11,22,.92);backdrop-filter:blur(10px);animation:fadeIn .22s}
 body.lb-noscroll{overflow:hidden}
-/* carousel คุมด้วย JS (transform) — ปัดแล้วเด้งเข้ารูปถัดไปกึ่งกลางเป๊ะ ทุกอัตราส่วนจอ
-   touch-action:none = ห้าม browser เลื่อนหน้าเอง ส่ง gesture ให้ JS หมด (กันปัดไปโดนหน้าหลังบน iOS) */
+/* แทร็กปัดนิ้ว (native scroll-snap) — แนวตั้งปัดลื่น · เผื่อแนวนอนปัดบัค มีปุ่ม ‹ › ให้กดเลื่อน */
 .lb-track{position:absolute;inset:clamp(48px,7vh,80px) 0 clamp(78px,11vh,104px);
-  display:flex;will-change:transform;touch-action:none;user-select:none;-webkit-user-select:none;
-  transition:transform .35s var(--ease)}
-.lb-slide{flex:0 0 100%;display:grid;place-items:center;padding:0 clamp(14px,4vw,48px);overflow:hidden}
+  display:flex;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none}
+.lb-track::-webkit-scrollbar{display:none}
+.lb-slide{flex:0 0 100%;scroll-snap-align:center;scroll-snap-stop:always;
+  display:grid;place-items:center;padding:0 clamp(14px,4vw,48px)}
+/* ปุ่มลูกศรจางๆ ทับรูป */
+.lb-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:3;
+  width:clamp(44px,7vw,58px);height:clamp(44px,7vw,58px);border-radius:50%;border:none;cursor:pointer;
+  background:rgba(255,255,255,.16);color:#fff;font-size:1.35rem;display:grid;place-items:center;
+  -webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);opacity:.5;
+  transition:opacity .2s,background .2s,transform .15s}
+.lb-arrow:hover{opacity:1;background:rgba(255,255,255,.3)}
+.lb-arrow:active{transform:translateY(-50%) scale(.9)}
+.lb-arrow:disabled{opacity:.12;cursor:default}
+.lb-prev{left:clamp(8px,2vw,22px)}.lb-next{right:clamp(8px,2vw,22px)}
 .lb-slide img{max-width:100%;max-height:100%;object-fit:contain;border-radius:16px;
   box-shadow:0 24px 60px rgba(0,0,0,.6);background:#0b0f1a;user-select:none;-webkit-user-drag:none}
 .lb-ph{width:min(86vw,680px);aspect-ratio:16/10;border-radius:16px;display:grid;place-items:center;
