@@ -187,11 +187,13 @@ b{font-weight:700}
 .roll-result .btn{padding:14px 40px;font-size:1.1rem}
 
 /* ============================================================ LIGHTBOX ดูรูปธีม */
-.lightbox{position:fixed;inset:0;z-index:70;background:rgba(7,11,22,.92);backdrop-filter:blur(10px);animation:fadeIn .22s}
-/* แทร็กเลื่อนแนวนอน — ปัดนิ้ว + snap แต่ละรูป */
-/* carousel คุมด้วย JS (transform) — ปัดแล้วเด้งเข้ารูปถัดไปกึ่งกลางเป๊ะ ทุกอัตราส่วนจอ */
+.lightbox{position:fixed;inset:0;z-index:70;background:rgba(7,11,22,.92);backdrop-filter:blur(10px);
+  animation:fadeIn .22s;touch-action:none;overscroll-behavior:none}
+body.lb-noscroll{overflow:hidden}
+/* carousel คุมด้วย JS (transform) — ปัดแล้วเด้งเข้ารูปถัดไปกึ่งกลางเป๊ะ ทุกอัตราส่วนจอ
+   touch-action:none = ห้าม browser เลื่อนหน้าเอง ส่ง gesture ให้ JS หมด (กันปัดไปโดนหน้าหลังบน iOS) */
 .lb-track{position:absolute;inset:clamp(48px,7vh,80px) 0 clamp(78px,11vh,104px);
-  display:flex;will-change:transform;touch-action:pan-y;user-select:none;-webkit-user-select:none;
+  display:flex;will-change:transform;touch-action:none;user-select:none;-webkit-user-select:none;
   transition:transform .35s var(--ease)}
 .lb-slide{flex:0 0 100%;display:grid;place-items:center;padding:0 clamp(14px,4vw,48px);overflow:hidden}
 .lb-slide img{max-width:100%;max-height:100%;object-fit:contain;border-radius:16px;

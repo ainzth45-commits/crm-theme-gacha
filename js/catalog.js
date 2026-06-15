@@ -64,10 +64,15 @@
     $('lb-title').textContent = t.name;
     $('lb-total').textContent = n;
     $('lightbox').hidden = false;
+    document.body.classList.add('lb-noscroll');   // ล็อกหน้าหลังไม่ให้เลื่อนตอนเปิดรูป
     apply(false);
     document.addEventListener('keydown', onKey);
   }
-  function closeLB() { $('lightbox').hidden = true; document.removeEventListener('keydown', onKey); }
+  function closeLB() {
+    $('lightbox').hidden = true;
+    document.body.classList.remove('lb-noscroll');
+    document.removeEventListener('keydown', onKey);
+  }
 
   // วางรูปที่ idx ให้อยู่กึ่งกลางเป๊ะ (translateX = -idx*100%)
   function apply(animate) {
