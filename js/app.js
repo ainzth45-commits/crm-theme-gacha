@@ -123,7 +123,7 @@
       var last = idx === ticks - 1;
       // ระหว่างหมุนโชว์เลขสุ่มหลากหลาย (1-99 ไม่ใช่แค่ลงท้าย 0) ให้ดูสนุก · ช่องสุดท้าย = ผลจริง
       var val = last ? result : (Math.floor(Math.random() * 99) + 1);
-      numEl.textContent = val;
+      numEl.textContent = String(val).padStart(2, '0');   // 0 นำหน้าเลขหลักเดียว (7→07) ความกว้างคงที่ ไม่กระตุก
       numEl.classList.add('tick'); setTimeout(function () { numEl.classList.remove('tick'); }, 70);
       Snd.tick(idx / (ticks - 1));
       idx++;
