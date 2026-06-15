@@ -121,7 +121,8 @@
     var idx = 0;
     function spin() {
       var last = idx === ticks - 1;
-      var val = last ? result : (Math.floor(Math.random() * 8) + 1) * 10;
+      // ระหว่างหมุนโชว์เลขสุ่มหลากหลาย (1-99 ไม่ใช่แค่ลงท้าย 0) ให้ดูสนุก · ช่องสุดท้าย = ผลจริง
+      var val = last ? result : (Math.floor(Math.random() * 99) + 1);
       numEl.textContent = val;
       numEl.classList.add('tick'); setTimeout(function () { numEl.classList.remove('tick'); }, 70);
       Snd.tick(idx / (ticks - 1));
