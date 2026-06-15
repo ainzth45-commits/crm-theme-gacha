@@ -42,11 +42,14 @@
     else chip.hidden = true;
   }
 
-  /* ---------- Lightbox (เลื่อนด้วยนิ้ว) ---------- */
-  var curTheme = 0;
+  /* ---------- Lightbox = swipe carousel คุมด้วย JS transform ---------- */
+  var curTheme = 0, idx = 0, n = 0;
+  var TRANS = 'transform .35s var(--ease)';
+
   function openLB(ti) {
-    curTheme = ti;
-    var t = themes[ti], n = t.imgs.length, track = $('lb-track');
+    curTheme = ti; idx = 0;
+    var t = themes[ti]; n = t.imgs.length;
+    var track = $('lb-track');
     track.innerHTML = t.imgs.map(function (src, i) {
       return '<div class="lb-slide">' +
         '<img src="' + src + '" alt="' + t.name + ' รูป ' + (i + 1) + '" draggable="false" ' +
@@ -55,55 +58,70 @@
         '<br><small style="font-weight:300;opacity:.85">รูปที่ ' + (i + 1) + '/' + n + ' — ยังไม่มีรูป</small></div>' +
         '</div>';
     }).join('');
-    // dots
-    var dots = $('lb-dots'), dh = '';
+    var dh = '';
     for (var i = 0; i < n; i++) dh += '<button type="button" class="lb-dot' + (i === 0 ? ' on' : '') + '" data-i="' + i + '" aria-label="รูป ' + (i + 1) + '"></button>';
-    dots.innerHTML = dh;
+    $('lb-dots').innerHTML = dh;
     $('lb-title').textContent = t.name;
     $('lb-total').textContent = n;
-    $('lb-cur').textContent = 1;
     $('lightbox').hidden = false;
-    track.scrollLeft = 0;
+    apply(false);
     document.addEventListener('keydown', onKey);
   }
   function closeLB() { $('lightbox').hidden = true; document.removeEventListener('keydown', onKey); }
 
-  function curIdx() {
+  // วางรูปที่ idx ให้อยู่กึ่งกลางเป๊ะ (translateX = -idx*100%)
+  function apply(animate) {
     var track = $('lb-track');
-    return Math.round(track.scrollLeft / track.clientWidth) || 0;
-  }
-  function syncActive() {
-    var i = curIdx();
-    $('lb-cur').textContent = i + 1;
+    track.style.transition = animate ? TRANS : 'none';
+    track.style.transform = 'translateX(' + (-idx * 100) + '%)';
+    $('lb-cur').textContent = idx + 1;
     var dots = $('lb-dots').children;
-    for (var d = 0; d < dots.length; d++) dots[d].classList.toggle('on', d === i);
+    for (var d = 0; d < dots.length; d++) dots[d].classList.toggle('on', d === idx);
   }
-  function scrollToIdx(i) {
-    var track = $('lb-track');
-    var n = themes[curTheme].imgs.length;
-    i = Math.max(0, Math.min(n - 1, i));
-    track.scrollTo({ left: i * track.clientWidth, behavior: 'smooth' });
-  }
+  function go(i) { idx = Math.max(0, Math.min(n - 1, i)); apply(true); }
   function onKey(e) {
     if (e.key === 'Escape') closeLB();
-    else if (e.key === 'ArrowRight') scrollToIdx(curIdx() + 1);
-    else if (e.key === 'ArrowLeft') scrollToIdx(curIdx() - 1);
+    else if (e.key === 'ArrowRight') go(idx + 1);
+    else if (e.key === 'ArrowLeft') go(idx - 1);
   }
 
   function initLB() {
+    var track = $('lb-track');
     $('lb-close').addEventListener('click', closeLB);
-    // คลิกพื้นที่ว่างนอกรูป (ขอบบน/ล่าง) เพื่อปิด
     $('lightbox').addEventListener('click', function (e) { if (e.target === $('lightbox')) closeLB(); });
-    // อัปเดตตัวนับ/จุด ตามการเลื่อน (throttle ด้วย rAF)
-    var ticking = false;
-    $('lb-track').addEventListener('scroll', function () {
-      if (ticking) return; ticking = true;
-      requestAnimationFrame(function () { syncActive(); ticking = false; });
-    });
-    // จุดด้านล่าง — แตะเพื่อกระโดดไปรูปนั้น (สมูท)
     $('lb-dots').addEventListener('click', function (e) {
-      var b = e.target.closest('.lb-dot'); if (b) scrollToIdx(+b.getAttribute('data-i'));
+      var b = e.target.closest('.lb-dot'); if (b) go(+b.getAttribute('data-i'));
     });
+
+    // ปัดนิ้ว (pointer drag) → ลากตามนิ้ว ปล่อยแล้วเด้งเข้ารูปถัดไป/เดิม
+    var dragging = false, moved = false, sx = 0, sy = 0;
+    track.addEventListener('pointerdown', function (e) {
+      if (e.button && e.button !== 0) return;
+      dragging = true; moved = false; sx = e.clientX; sy = e.clientY;
+      track.style.transition = 'none';
+      try { track.setPointerCapture(e.pointerId); } catch (x) {}
+    });
+    track.addEventListener('pointermove', function (e) {
+      if (!dragging) return;
+      var dx = e.clientX - sx, dy = e.clientY - sy;
+      if (!moved && Math.abs(dx) < 6 && Math.abs(dx) <= Math.abs(dy)) return; // ยังไม่ใช่ปัดแนวนอน
+      moved = true;
+      var w = track.clientWidth || 1;
+      var pct = -idx * 100 + (dx / w) * 100;
+      if ((idx === 0 && dx > 0) || (idx === n - 1 && dx < 0)) pct = -idx * 100 + (dx / w) * 100 / 3; // หน่วงที่ขอบ
+      track.style.transform = 'translateX(' + pct + '%)';
+    });
+    function end(e) {
+      if (!dragging) return; dragging = false;
+      var dx = (e.clientX || sx) - sx;
+      var th = Math.max(45, track.clientWidth * 0.12);
+      if (dx <= -th && idx < n - 1) idx++;
+      else if (dx >= th && idx > 0) idx--;
+      apply(true);
+    }
+    track.addEventListener('pointerup', end);
+    track.addEventListener('pointercancel', end);
+    track.addEventListener('dragstart', function (e) { e.preventDefault(); });
   }
 
   window.GachaCatalog = { render: render, initLB: initLB };

@@ -189,13 +189,11 @@ b{font-weight:700}
 /* ============================================================ LIGHTBOX ดูรูปธีม */
 .lightbox{position:fixed;inset:0;z-index:70;background:rgba(7,11,22,.92);backdrop-filter:blur(10px);animation:fadeIn .22s}
 /* แทร็กเลื่อนแนวนอน — ปัดนิ้ว + snap แต่ละรูป */
+/* carousel คุมด้วย JS (transform) — ปัดแล้วเด้งเข้ารูปถัดไปกึ่งกลางเป๊ะ ทุกอัตราส่วนจอ */
 .lb-track{position:absolute;inset:clamp(48px,7vh,80px) 0 clamp(78px,11vh,104px);
-  display:flex;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;
-  overscroll-behavior-x:contain;touch-action:pan-x;
-  -webkit-overflow-scrolling:touch;scrollbar-width:none}
-.lb-track::-webkit-scrollbar{display:none}
-.lb-slide{flex:0 0 100%;scroll-snap-align:center;scroll-snap-stop:always;
-  display:grid;place-items:center;padding:0 clamp(14px,4vw,48px)}
+  display:flex;will-change:transform;touch-action:pan-y;user-select:none;-webkit-user-select:none;
+  transition:transform .35s var(--ease)}
+.lb-slide{flex:0 0 100%;display:grid;place-items:center;padding:0 clamp(14px,4vw,48px);overflow:hidden}
 .lb-slide img{max-width:100%;max-height:100%;object-fit:contain;border-radius:16px;
   box-shadow:0 24px 60px rgba(0,0,0,.6);background:#0b0f1a;user-select:none;-webkit-user-drag:none}
 .lb-ph{width:min(86vw,680px);aspect-ratio:16/10;border-radius:16px;display:grid;place-items:center;
